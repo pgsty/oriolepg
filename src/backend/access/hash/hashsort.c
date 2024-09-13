@@ -144,6 +144,7 @@ _h_indexbuild(HSpool *hspool, Relation heapRel)
 									   hspool->low_mask);
 		Assert(hashkey >= lasthashkey);
 #endif
+		CHECK_FOR_INTERRUPTS();
 
 		/* the tuples are sorted by hashkey, so pass 'sorted' as true */
 		_hash_doinsert(hspool->index, itup, heapRel, true);
