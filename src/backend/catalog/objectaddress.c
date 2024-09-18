@@ -776,7 +776,7 @@ static const struct object_type_map
 	{
 		"access method", OBJECT_ACCESS_METHOD
 	},
-	/* OCLASS_AM_IMPL */
+	/* OCLASS_AMIMPL */
 	{
 		"access method implementation", OBJECT_ACCESS_METHOD_IMPLEMENTATION
 	},
@@ -1058,6 +1058,7 @@ get_object_address(ObjectType objtype, Node *object,
 			case OBJECT_EVENT_TRIGGER:
 			case OBJECT_PARAMETER_ACL:
 			case OBJECT_ACCESS_METHOD:
+			case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
 			case OBJECT_PUBLICATION:
 			case OBJECT_SUBSCRIPTION:
 				address = get_object_address_unqualified(objtype,
@@ -1309,6 +1310,11 @@ get_object_address_unqualified(ObjectType objtype,
 		case OBJECT_ACCESS_METHOD:
 			address.classId = AccessMethodRelationId;
 			address.objectId = get_am_oid(name, missing_ok);
+			address.objectSubId = 0;
+			break;
+		case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
+			address.classId = AccessMethodImplementationId;
+			address.objectId = get_amimpl_oid(name, missing_ok);
 			address.objectSubId = 0;
 			break;
 		case OBJECT_DATABASE:
@@ -2346,6 +2352,7 @@ pg_get_object_address(PG_FUNCTION_ARGS)
 			objnode = (Node *) name;
 			break;
 		case OBJECT_ACCESS_METHOD:
+		case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
 		case OBJECT_DATABASE:
 		case OBJECT_EVENT_TRIGGER:
 		case OBJECT_EXTENSION:
@@ -2590,6 +2597,7 @@ check_object_ownership(Oid roleid, ObjectType objtype, ObjectAddress address,
 		case OBJECT_TSPARSER:
 		case OBJECT_TSTEMPLATE:
 		case OBJECT_ACCESS_METHOD:
+		case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
 		case OBJECT_PARAMETER_ACL:
 			/* We treat these object types as being owned by superusers */
 			if (!superuser_arg(roleid))
@@ -3249,9 +3257,11 @@ getObjectDescription(const ObjectAddress *object, bool missing_ok)
 			}
 		case OCLASS_AMIMPL:
 			{
-				HeapTuple	tup;
+				HeapTuple	impltup;
+				HeapTuple   amtup;
+				Oid			amoid;
 
-				tup = SearchSysCache1(AMIMPLOID,
+				impltup = SearchSysCache1(AMIMPLOID,
 									  ObjectIdGetDatum(object->objectId));
 				if (!HeapTupleIsValid(tup))
 				{
@@ -3261,10 +3271,23 @@ getObjectDescription(const ObjectAddress *object, bool missing_ok)
 					break;
 				}
 
+				amoid = GETSTRUCT(impltup)->amoid;
+				amtup = SearchSysCache1(AMOID,
+									  ObjectIdGetDatum(amoid));
+				if (!HeapTupleIsValid(amtup))
+				{
+					ReleaseSysCache(impltup);
+					if (!missing_ok)
+						elog(ERROR, "cache lookup failed for access method %u",
+							 amoid);
+					break;
+				}
+
 				appendStringInfo(&buffer, _("access method implementation %s for access method %u"),
-								 NameStr(((Form_pg_am) GETSTRUCT(tup))->am_implname),
-								 GETSTRUCT(tup))->amoid)));
-				ReleaseSysCache(tup);
+								 NameStr(((Form_pg_amimpl) GETSTRUCT(impltup))->implname),
+								 NameStr(((Form_pg_am) GETSTRUCT(amtup))->amname));
+				ReleaseSysCache(impltup);
+				ReleaseSysCache(amtup);
 				break;
 			}
 		case OCLASS_AMOP:
@@ -4514,6 +4537,10 @@ getObjectTypeDescription(const ObjectAddress *object, bool missing_ok)
 			appendStringInfoString(&buffer, "access method");
 			break;
 
+		case OCLASS_AMIMPL:
+			appendStringInfoString(&buffer, "access method implementation");
+			break;
+
 		case OCLASS_AMOP:
 			appendStringInfoString(&buffer, "operator of access method");
 			break;
@@ -5144,6 +5171,24 @@ getObjectIdentityParts(const ObjectAddress *object,
 				appendStringInfoString(&buffer, quote_identifier(amname));
 				if (objname)
 					*objname = list_make1(amname);
+			}
+			break;
+
+		case OCLASS_AMIMPL:
+			{
+				char	   *implname;
+
+				implname = get_amimpl_name(object->objectId);
+				if (!implname)
+				{
+					if (!missing_ok)
+						elog(ERROR, "cache lookup failed for access method %u",
+							 object->objectId);
+					break;
+				}
+				appendStringInfoString(&buffer, quote_identifier(implname));
+				if (objname)
+					*objname = list_make1(implname);
 			}
 			break;
 

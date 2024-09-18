@@ -163,7 +163,7 @@ static const Oid object_classes[] = {
 	OperatorClassRelationId,	/* OCLASS_OPCLASS */
 	OperatorFamilyRelationId,	/* OCLASS_OPFAMILY */
 	AccessMethodRelationId,		/* OCLASS_AM */
-	AccessMethodImplamentationId, /* OCLASS_AM_IMPL */
+	AccessMethodImplamentationId, /* OCLASS_AMIMPL */
 	AccessMethodOperatorRelationId, /* OCLASS_AMOP */
 	AccessMethodProcedureRelationId,	/* OCLASS_AMPROC */
 	RewriteRelationId,			/* OCLASS_REWRITE */
@@ -1542,6 +1542,7 @@ doDeletion(const ObjectAddress *object, int flags)
 		case OCLASS_OPCLASS:
 		case OCLASS_OPFAMILY:
 		case OCLASS_AM:
+		case OCLASS_AMIMPL:
 		case OCLASS_AMOP:
 		case OCLASS_AMPROC:
 		case OCLASS_SCHEMA:
@@ -2935,7 +2936,7 @@ getObjectClass(const ObjectAddress *object)
 			return OCLASS_AM;
 
 		case AccessMethodImplementationId:
-			return OCLASS_AM_IMPL;
+			return OCLASS_AMIMPL;
 
 		case AccessMethodOperatorRelationId:
 			return OCLASS_AMOP;
