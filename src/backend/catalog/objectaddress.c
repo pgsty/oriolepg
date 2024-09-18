@@ -136,6 +136,20 @@ static const ObjectPropertyType ObjectProperty[] =
 		true
 	},
 	{
+		"access method implementation",
+		AccessMethodImplementationId,
+		AmImplOidIndexId,
+		AMIMPLOID,
+		AMIMPLNAME,
+		Anum_pg_am_impl_imploid,
+		Anum_pg_am_impl_implname,
+		InvalidAttrNumber,
+		InvalidAttrNumber,
+		InvalidAttrNumber,
+		-1,
+		true
+	},
+	{
 		"access method operator",
 		AccessMethodOperatorRelationId,
 		AccessMethodOperatorOidIndexId,
@@ -761,6 +775,10 @@ static const struct object_type_map
 	/* OCLASS_AM */
 	{
 		"access method", OBJECT_ACCESS_METHOD
+	},
+	/* OCLASS_AM_IMPL */
+	{
+		"access method implementation", OBJECT_ACCESS_METHOD_IMPLEMENTATION
 	},
 	/* OCLASS_AMOP */
 	{
@@ -3229,7 +3247,26 @@ getObjectDescription(const ObjectAddress *object, bool missing_ok)
 				ReleaseSysCache(tup);
 				break;
 			}
+		case OCLASS_AMIMPL:
+			{
+				HeapTuple	tup;
 
+				tup = SearchSysCache1(AMIMPLOID,
+									  ObjectIdGetDatum(object->objectId));
+				if (!HeapTupleIsValid(tup))
+				{
+					if (!missing_ok)
+						elog(ERROR, "cache lookup failed for access method implementation %u",
+							 object->objectId);
+					break;
+				}
+
+				appendStringInfo(&buffer, _("access method implementation %s for access method %u"),
+								 NameStr(((Form_pg_am) GETSTRUCT(tup))->am_implname),
+								 GETSTRUCT(tup))->amoid)));
+				ReleaseSysCache(tup);
+				break;
+			}
 		case OCLASS_AMOP:
 			{
 				Relation	amopDesc;

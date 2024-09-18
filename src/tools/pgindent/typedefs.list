@@ -482,6 +482,7 @@ Counters
 CoverExt
 CoverPos
 CreateAmStmt
+CreateAmImplStmt
 CreateCastStmt
 CreateConversionStmt
 CreateDBRelInfo

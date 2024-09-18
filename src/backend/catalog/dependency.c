@@ -163,6 +163,7 @@ static const Oid object_classes[] = {
 	OperatorClassRelationId,	/* OCLASS_OPCLASS */
 	OperatorFamilyRelationId,	/* OCLASS_OPFAMILY */
 	AccessMethodRelationId,		/* OCLASS_AM */
+	AccessMethodImplamentationId, /* OCLASS_AM_IMPL */
 	AccessMethodOperatorRelationId, /* OCLASS_AMOP */
 	AccessMethodProcedureRelationId,	/* OCLASS_AMPROC */
 	RewriteRelationId,			/* OCLASS_REWRITE */
@@ -2932,6 +2933,9 @@ getObjectClass(const ObjectAddress *object)
 
 		case AccessMethodRelationId:
 			return OCLASS_AM;
+
+		case AccessMethodImplementationId:
+			return OCLASS_AM_IMPL;
 
 		case AccessMethodOperatorRelationId:
 			return OCLASS_AMOP;

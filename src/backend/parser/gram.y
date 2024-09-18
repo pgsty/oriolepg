@@ -316,7 +316,7 @@ static Node *makeRecursiveViewSelect(char *relname, List *aliases, Node *query);
 		DeallocateStmt PrepareStmt ExecuteStmt
 		DropOwnedStmt ReassignOwnedStmt
 		AlterTSConfigurationStmt AlterTSDictionaryStmt
-		CreateMatViewStmt RefreshMatViewStmt CreateAmStmt
+		CreateMatViewStmt RefreshMatViewStmt CreateAmStmt CreateAmImplStmt
 		CreatePublicationStmt AlterPublicationStmt
 		CreateSubscriptionStmt AlterSubscriptionStmt DropSubscriptionStmt
 
@@ -371,7 +371,6 @@ static Node *makeRecursiveViewSelect(char *relname, List *aliases, Node *query);
 %type <list>	OptSchemaEltList parameter_name_list
 
 %type <chr>		am_type
-%type <str>		opt_for_tableam
 
 %type <boolean> TriggerForSpec TriggerForType
 %type <ival>	TriggerActionTime
@@ -1006,6 +1005,7 @@ stmt:
 			| ConstraintsSetStmt
 			| CopyStmt
 			| CreateAmStmt
+			| CreateAmImplStmt
 			| CreateAsStmt
 			| CreateAssertionStmt
 			| CreateCastStmt
@@ -5747,21 +5747,36 @@ row_security_cmd:
 /*****************************************************************************
  *
  *		QUERY:
- *				CREATE ACCESS METHOD name TYPE am_type
- *					[FOR tableam_name]
+ *				CREATE IMPLEMENTATION implname FOR am_name
  *					HANDLER handler_name
  *
  *****************************************************************************/
 
-CreateAmStmt: CREATE ACCESS METHOD name TYPE_P am_type
-				 opt_for_tableam HANDLER handler_name
+CreateAmImplStmt: CREATE IMPLEMENTATION implname FOR ACCESS METHOD amname HANDLER handler_name
+				{
+					CreateAmImplStmt *n = makeNode(CreateAmImplStmt);
+
+					n->implname = $3;
+					n->amname = $7;
+					n->handler_name = $9;
+					$$ = (Node *) n;
+				}
+		;
+
+/*****************************************************************************
+ *
+ *		QUERY:
+ *				CREATE ACCESS METHOD name TYPE am_type HANDLER handler_name
+ *
+ *****************************************************************************/
+
+CreateAmStmt: CREATE ACCESS METHOD name TYPE_P am_type HANDLER handler_name
 				{
 					CreateAmStmt *n = makeNode(CreateAmStmt);
 
 					n->amname = $4;
+					n->handler_name = $8;
 					n->amtype = $6;
-					n->tableam_name = $7;
-					n->handler_name = $9;
 					$$ = (Node *) n;
 				}
 		;
@@ -5769,11 +5784,6 @@ CreateAmStmt: CREATE ACCESS METHOD name TYPE_P am_type
 am_type:
 			INDEX			{ $$ = AMTYPE_INDEX; }
 		|	TABLE			{ $$ = AMTYPE_TABLE; }
-		;
-
-opt_for_tableam:
-			FOR name							{ $$ = $2; }
-			| /*EMPTY*/							{ $$ = NULL; }
 		;
 
 /*****************************************************************************

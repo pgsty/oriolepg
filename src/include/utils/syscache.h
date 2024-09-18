@@ -32,6 +32,8 @@
 enum SysCacheIdentifier
 {
 	AGGFNOID = 0,
+	AMIMPLNAME,
+	AMIMPLOID,
 	AMNAME,
 	AMOID,
 	AMOPOPID,
