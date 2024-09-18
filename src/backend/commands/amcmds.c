@@ -207,6 +207,56 @@ CreateAccessMethod(CreateAmStmt *stmt)
 }
 
 /*
+ * get_amimpl_imploid - given an access method implementation name, look up its OID.
+ */
+Oid
+get_amimpl_imploid(const char *implname, bool missing_ok)
+{
+	HeapTuple   tup;
+	Oid         oid = InvalidOid;
+
+	tup = SearchSysCache1(AMNAME, CStringGetDatum(implname));
+	if (HeapTupleIsValid(tup))
+	{
+		Form_pg_amimpl  amimplform = (Form_pg_amimpl) GETSTRUCT(tup);
+
+		oid = amimplform->imploid;
+		ReleaseSysCache(tup);
+	}
+
+	if (!OidIsValid(oid) && !missing_ok)
+		ereport(ERROR,
+				(errcode(ERRCODE_UNDEFINED_OBJECT),
+				 errmsg("access method implementation \"%s\" does not exist", implname)));
+	return oid;
+}
+
+/*
+ * get_amimpl_amoid - given an access method implementation name, look up its access method OID.
+ */
+Oid
+get_amimpl_amoid(const char *implname, bool missing_ok)
+{
+	HeapTuple   tup;
+	Oid         oid = InvalidOid;
+
+	tup = SearchSysCache1(AMNAME, CStringGetDatum(implname));
+	if (HeapTupleIsValid(tup))
+	{
+		Form_pg_amimpl  amimplform = (Form_pg_amimpl) GETSTRUCT(tup);
+
+		oid = amimplform->amoid;
+		ReleaseSysCache(tup);
+	}
+
+	if (!OidIsValid(oid) && !missing_ok)
+		ereport(ERROR,
+				(errcode(ERRCODE_UNDEFINED_OBJECT),
+				 errmsg("access method for implementation \"%s\" does not exist", implname)));
+	return oid;
+}
+
+/*
  * get_am_type_oid
  *		Worker for various get_am_*_oid variants
  *
@@ -280,17 +330,17 @@ get_am_oid(const char *amname, bool missing_ok)
  * get_am_name - given an access method OID, look up its name.
  */
 char *
-get_amimpl_name(Oid amimplOid)
+get_amimpl_name(Oid imploid)
 {
 	HeapTuple	tup;
 	char	   *result = NULL;
 
-	tup = SearchSysCache1(AMIMPLOID, ObjectIdGetDatum(amimplOid));
+	tup = SearchSysCache1(AMIMPLOID, ObjectIdGetDatum(imploid));
 	if (HeapTupleIsValid(tup))
 	{
 		Form_pg_amimpl	amimplform = (Form_pg_amimpl) GETSTRUCT(tup);
 
-		result = pstrdup(NameStr(amimplform->amimplname));
+		result = pstrdup(NameStr(amimplform->implname));
 		ReleaseSysCache(tup);
 	}
 	return result;
