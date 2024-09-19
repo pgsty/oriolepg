@@ -330,7 +330,7 @@ get_am_oid(const char *amname, bool missing_ok)
  * get_am_name - given an access method OID, look up its name.
  */
 char *
-get_amimpl_name(Oid imploid)
+get_amimpl_implname(Oid imploid)
 {
 	HeapTuple	tup;
 	char	   *result = NULL;

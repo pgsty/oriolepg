@@ -141,8 +141,8 @@ static const ObjectPropertyType ObjectProperty[] =
 		AmImplOidIndexId,
 		AMIMPLOID,
 		AMIMPLNAME,
-		Anum_pg_am_impl_imploid,
-		Anum_pg_am_impl_implname,
+		Anum_pg_amimpl_imploid,
+		Anum_pg_amimpl_implname,
 		InvalidAttrNumber,
 		InvalidAttrNumber,
 		InvalidAttrNumber,
@@ -1314,7 +1314,7 @@ get_object_address_unqualified(ObjectType objtype,
 			break;
 		case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
 			address.classId = AccessMethodImplementationId;
-			address.objectId = get_amimpl_oid(name, missing_ok);
+			address.objectId = get_amimpl_imploid(name, missing_ok);
 			address.objectSubId = 0;
 			break;
 		case OBJECT_DATABASE:
@@ -5178,7 +5178,7 @@ getObjectIdentityParts(const ObjectAddress *object,
 			{
 				char	   *implname;
 
-				implname = get_amimpl_name(object->objectId);
+				implname = get_amimpl_implname(object->objectId);
 				if (!implname)
 				{
 					if (!missing_ok)
