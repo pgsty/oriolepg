@@ -146,18 +146,17 @@ static const struct cachedesc cacheinfo[] = {
 		4
 	},
 	[AMIMPLNAME] = {
-		AccessMethodRelationId,
-		AmNameIndexId,
+		AccessMethodImplementationId,
+		AmImplImplnameIndexId,
 		KEY(Anum_pg_amimpl_implname),
 		4
 	},
 	[AMIMPLOID] = {
-		AccessMethodRelationId,
-		AmOidIndexId,
+		AccessMethodImplementationId,
+		AmImplImploidIndexId,
 		KEY(Anum_pg_amimpl_imploid),
 		4
 	},
-
 	[AMOPOPID] = {
 		AccessMethodOperatorRelationId,
 		AccessMethodOperatorIndexId,

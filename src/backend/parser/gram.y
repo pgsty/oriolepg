@@ -5747,25 +5747,6 @@ row_security_cmd:
 /*****************************************************************************
  *
  *		QUERY:
- *				CREATE IMPLEMENTATION implname FOR am_name
- *					HANDLER handler_name
- *
- *****************************************************************************/
-
-CreateAmImplStmt: CREATE IMPLEMENTATION implname FOR ACCESS METHOD amname HANDLER handler_name
-				{
-					CreateAmImplStmt *n = makeNode(CreateAmImplStmt);
-
-					n->implname = $3;
-					n->amname = $7;
-					n->handler_name = $9;
-					$$ = (Node *) n;
-				}
-		;
-
-/*****************************************************************************
- *
- *		QUERY:
  *				CREATE ACCESS METHOD name TYPE am_type HANDLER handler_name
  *
  *****************************************************************************/
@@ -5784,6 +5765,25 @@ CreateAmStmt: CREATE ACCESS METHOD name TYPE_P am_type HANDLER handler_name
 am_type:
 			INDEX			{ $$ = AMTYPE_INDEX; }
 		|	TABLE			{ $$ = AMTYPE_TABLE; }
+		;
+
+/*****************************************************************************
+ *
+ *		QUERY:
+ *				CREATE IMPLEMENTATION implname FOR am_name
+ *					HANDLER handler_name
+ *
+ *****************************************************************************/
+
+CreateAmImplStmt: CREATE IMPLEMENTATION implname FOR ACCESS METHOD amname HANDLER handler_name
+				{
+					CreateAmImplStmt *n = makeNode(CreateAmImplStmt);
+
+					n->implname = $3;
+					n->amname = $7;
+					n->handler_name = $9;
+					$$ = (Node *) n;
+				}
 		;
 
 /*****************************************************************************

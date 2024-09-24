@@ -29,7 +29,7 @@
 CATALOG(pg_am,3001,AccessMethodImplementationId)
 {
 	Oid			imploid;				/* implementation oid */
-	Oid			amoid;				/* index/AM oid */
+	Oid			amoid;					/* index/AM oid */
 
 	/* access method implementation name e.g. tableam name for particular index implementation */
 	NameData	implname;				/* implementation name */

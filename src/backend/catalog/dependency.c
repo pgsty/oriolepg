@@ -163,7 +163,7 @@ static const Oid object_classes[] = {
 	OperatorClassRelationId,	/* OCLASS_OPCLASS */
 	OperatorFamilyRelationId,	/* OCLASS_OPFAMILY */
 	AccessMethodRelationId,		/* OCLASS_AM */
-	AccessMethodImplamentationId, /* OCLASS_AMIMPL */
+	AccessMethodImplementationId, /* OCLASS_AMIMPL */
 	AccessMethodOperatorRelationId, /* OCLASS_AMOP */
 	AccessMethodProcedureRelationId,	/* OCLASS_AMPROC */
 	RewriteRelationId,			/* OCLASS_REWRITE */
