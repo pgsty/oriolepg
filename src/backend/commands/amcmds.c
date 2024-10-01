@@ -39,7 +39,7 @@ static const char *get_am_type_string(char amtype);
  *		Registers a new access method.
  */
 ObjectAddress
-CreateAccessMethodImplementation(CreateAmimplStmt *stmt)
+CreateAccessMethodImplementation(CreateAmImplStmt *stmt)
 {
 	Relation	rel;
 	ObjectAddress myself;
@@ -62,7 +62,7 @@ CreateAccessMethodImplementation(CreateAmimplStmt *stmt)
 				 errhint("Must be superuser to create an access method.")));
 
 	/* Check if name is used */
-	imploid = GetSysCacheOid1(IMPLNAME, Anum_pg_amimpl_imploid,
+	imploid = GetSysCacheOid1(AMIMPLNAME, Anum_pg_amimpl_oid,
 							CStringGetDatum(stmt->implname));
 	if (OidIsValid(imploid))
 	{
@@ -94,8 +94,8 @@ CreateAccessMethodImplementation(CreateAmimplStmt *stmt)
 	memset(values, 0, sizeof(values));
 	memset(nulls, false, sizeof(nulls));
 
-	imploid = GetNewOidWithIndex(rel, AmimplOidIndexId, Anum_pg_amimpl_imploid);
-	values[Anum_pg_amimpl_imploid - 1] = ObjectIdGetDatum(imploid);
+	imploid = GetNewOidWithIndex(rel, AmimplOidIndexId, Anum_pg_amimpl_oid);
+	values[Anum_pg_amimpl_oid - 1] = ObjectIdGetDatum(imploid);
 	values[Anum_pg_amimpl_implname - 1] =
 		DirectFunctionCall1(namein, CStringGetDatum(stmt->implname));
 	values[Anum_pg_amimpl_amoid - 1] = ObjectIdGetDatum(amoid);
@@ -107,7 +107,7 @@ CreateAccessMethodImplementation(CreateAmimplStmt *stmt)
 	heap_freetuple(tup);
 
 	myself.classId = AccessMethodImplementationId;
-	myself.objectId = am_imploid;
+	myself.objectId = amimpl_oid;
 	myself.objectSubId = 0;
 
 	/* Record dependency on handler function */
@@ -207,10 +207,10 @@ CreateAccessMethod(CreateAmStmt *stmt)
 }
 
 /*
- * get_amimpl_imploid - given an access method implementation name, look up its OID.
+ * get_amimpl_oid - given an access method implementation name, look up its OID.
  */
 Oid
-get_amimpl_imploid(const char *implname, bool missing_ok)
+get_amimpl_oid(const char *implname, bool missing_ok)
 {
 	HeapTuple   tup;
 	Oid         oid = InvalidOid;
@@ -220,7 +220,7 @@ get_amimpl_imploid(const char *implname, bool missing_ok)
 	{
 		Form_pg_amimpl  amimplform = (Form_pg_amimpl) GETSTRUCT(tup);
 
-		oid = amimplform->imploid;
+		oid = amimplform->loid;
 		ReleaseSysCache(tup);
 	}
 

@@ -2824,7 +2824,7 @@ typedef struct CreateAmImplStmt
 	char	   *amname;			/* access method name */
 	char	   *implname;		/* table AM implementation name */
 	List	   *handler_name;	/* handler function name */
-} CreateAmStmt;
+} CreateAmImplStmt;
 
 /*----------------------
  *		Create ACCESS METHOD Statement

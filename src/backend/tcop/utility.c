@@ -171,6 +171,7 @@ ClassifyUtilityCommandAsReadOnly(Node *parsetree)
 		case T_CommentStmt:
 		case T_CompositeTypeStmt:
 		case T_CreateAmStmt:
+		case T_CreateAmImplStmt
 		case T_CreateCastStmt:
 		case T_CreateConversionStmt:
 		case T_CreateDomainStmt:
@@ -1843,6 +1844,10 @@ ProcessUtilitySlow(ParseState *pstate,
 				address = CreateAccessMethod((CreateAmStmt *) parsetree);
 				break;
 
+			case T_CreateAmImplStmt:
+				address = CreateAccessMethodImplementation((CreateAmImplStmt *) parsetree);
+				break;
+
 			case T_CreatePublicationStmt:
 				address = CreatePublication(pstate, (CreatePublicationStmt *) parsetree);
 				break;
@@ -3050,6 +3055,10 @@ CreateCommandTag(Node *parsetree)
 			tag = CMDTAG_CREATE_ACCESS_METHOD;
 			break;
 
+		case T_CreateAmImplStmt:
+			tag = CMDTAG_CREATE_ACCESS_METHOD_IMPLEMENTATION;
+			break;
+
 		case T_CreatePublicationStmt:
 			tag = CMDTAG_CREATE_PUBLICATION;
 			break;
@@ -3664,6 +3673,10 @@ GetCommandLogLevel(Node *parsetree)
 			break;
 
 		case T_CreateAmStmt:
+			lev = LOGSTMT_DDL;
+			break;
+
+		case T_CreateAmImplStmt:
 			lev = LOGSTMT_DDL;
 			break;
 

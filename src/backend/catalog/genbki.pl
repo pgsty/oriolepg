@@ -204,18 +204,18 @@ foreach my $row (@{ $catalog_data{pg_class} })
 
 # Build lookup tables.
 
-# access method implementation OID lookup
-my %amimploids;
-foreach my $row (@{ $catalog_data{pg_amimpl} })
-{
-	$amoids{ $row->{implname} } = $row->{imploid};
-}
-
 # access method OID lookup
 my %amoids;
 foreach my $row (@{ $catalog_data{pg_am} })
 {
 	$amoids{ $row->{amname} } = $row->{oid};
+}
+
+# access method implementation OID lookup
+my %amimploids;
+foreach my $row (@{ $catalog_data{pg_amimpl} })
+{
+	$amimploids{ $row->{implname} } = $row->{oid};
 }
 
 # role OID lookup
@@ -395,7 +395,7 @@ close $ef;
 # Map lookup name to the corresponding hash table.
 my %lookup_kind = (
 	pg_am => \%amoids,
-	pa_amimpl => \%amimploids,
+	pg_amimpl => \%amimploids,
 	pg_authid => \%authidoids,
 	pg_class => \%classoids,
 	pg_collation => \%collationoids,

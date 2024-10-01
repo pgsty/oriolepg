@@ -141,7 +141,7 @@ static const ObjectPropertyType ObjectProperty[] =
 		AmImplOidIndexId,
 		AMIMPLOID,
 		AMIMPLNAME,
-		Anum_pg_amimpl_imploid,
+		Anum_pg_amimpl_oid,
 		Anum_pg_amimpl_implname,
 		InvalidAttrNumber,
 		InvalidAttrNumber,
@@ -1314,7 +1314,7 @@ get_object_address_unqualified(ObjectType objtype,
 			break;
 		case OBJECT_ACCESS_METHOD_IMPLEMENTATION:
 			address.classId = AccessMethodImplementationId;
-			address.objectId = get_amimpl_imploid(name, missing_ok);
+			address.objectId = get_amimpl_oid(name, missing_ok);
 			address.objectSubId = 0;
 			break;
 		case OBJECT_DATABASE:

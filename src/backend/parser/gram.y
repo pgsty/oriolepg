@@ -717,7 +717,7 @@ static Node *makeRecursiveViewSelect(char *relname, List *aliases, Node *query);
 
 	HANDLER HAVING HEADER_P HOLD HOUR_P
 
-	IDENTITY_P IF_P ILIKE IMMEDIATE IMMUTABLE IMPLICIT_P IMPORT_P IN_P INCLUDE
+	IDENTITY_P IF_P ILIKE IMMEDIATE IMMUTABLE IMPLEMENTATION IMPLICIT_P IMPORT_P IN_P INCLUDE
 	INCLUDING INCREMENT INDENT INDEX INDEXES INHERIT INHERITS INITIALLY INLINE_P
 	INNER_P INOUT INPUT_P INSENSITIVE INSERT INSTEAD INT_P INTEGER
 	INTERSECT INTERVAL INTO INVOKER IS ISNULL ISOLATION
@@ -5775,7 +5775,7 @@ am_type:
  *
  *****************************************************************************/
 
-CreateAmImplStmt: CREATE IMPLEMENTATION implname FOR ACCESS METHOD amname HANDLER handler_name
+CreateAmImplStmt: CREATE IMPLEMENTATION name FOR ACCESS METHOD name HANDLER handler_name
 				{
 					CreateAmImplStmt *n = makeNode(CreateAmImplStmt);
 
@@ -17069,6 +17069,7 @@ unreserved_keyword:
 			| IF_P
 			| IMMEDIATE
 			| IMMUTABLE
+			| IMPLEMENTATION
 			| IMPLICIT_P
 			| IMPORT_P
 			| INCLUDE
@@ -17634,6 +17635,7 @@ bare_label_keyword:
 			| ILIKE
 			| IMMEDIATE
 			| IMMUTABLE
+			| IMPLEMENTATION
 			| IMPLICIT_P
 			| IMPORT_P
 			| IN_P
