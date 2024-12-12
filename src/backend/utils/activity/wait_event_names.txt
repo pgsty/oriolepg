@@ -267,6 +267,7 @@ WAL_SUMMARY_WRITE	"Waiting for a write to a WAL summary file."
 WAL_SYNC	"Waiting for a WAL file to reach durable storage."
 WAL_SYNC_METHOD_ASSIGN	"Waiting for data to reach durable storage while assigning a new WAL sync method."
 WAL_WRITE	"Waiting for a write to a WAL file."
+WAL_GROUP_FLUSH	"Waiting for flushing WAL of backends group."
 
 ABI_compatibility:
 
