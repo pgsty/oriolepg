@@ -43,3 +43,8 @@ lib*.pc
 /Release/
 /tmp_install/
 /portlock/
+
+.idea/
+.code/
+pack.sh
+.gitignore
